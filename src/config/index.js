@@ -1,0 +1,7 @@
+import dotenv from "dotenv";
+dotenv.config();
+
+export const envPort = process.env.PORT;
+export const envMode = process.env.MODE;
+export const envDevDatabaseURL = process.env.Dev_DB_URL;
+export const envProdDatabaseURL = process.env.Prod_DB_URL;
