@@ -1,14 +1,10 @@
 import stripePackage from "stripe";
 const stripe = stripePackage(process.env.STRIPE_SECRET_KEY);
 
-/**
- * @desc    Create a Payment Intent
- * @route   POST /api/payments/create-payment-intent
- * @access  Public
- */
 export const createPaymentIntent = async (req, res) => {
   try {
     const { amount, currency = "PKR" } = req.body;
+    console.log("req.body",req.body);
 
     if (!amount || amount <= 0) {
       return res.status(400).json({ error: "Invalid amount" });
@@ -29,22 +25,3 @@ export const createPaymentIntent = async (req, res) => {
     res.status(500).json({ error: "Payment processing failed" });
   }
 };
-
-
-/**
- * @desc    Save Payment to DB (Optional)
- * @route   POST /api/payments/save-payment
- * @access  Private
- */
-// export const savePayment = async (req, res) => {
-//   try {
-//     const { paymentId, amount, userId } = req.body;
-
-//     const payment = new Payment({ paymentId, amount, userId });
-//     await payment.save();
-
-//     res.status(201).json({ success: true, payment });
-//   } catch (error) {
-//     res.status(500).json({ error: "Failed to save payment" });
-//   }
-// };
