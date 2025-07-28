@@ -1,11 +1,14 @@
 import mongoose from 'mongoose';
 const { Schema, model, models, Types } = mongoose;
 
-import UsersModel from './user.js';
+import UsersModel from './userModel.js';
+import MessageModel from './messageModel.js';
+import ConversationModel from './conversationModel.js';
 
 const args = {Schema,model,models,Types};
 
 const Users = UsersModel(args);
+const Messages = MessageModel(args);
+const Conversations = ConversationModel(args);
 
-
-export { Users };
+export { Users , Messages , Conversations };

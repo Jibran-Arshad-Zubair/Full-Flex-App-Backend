@@ -1,0 +1,36 @@
+import catchAsyncError from "../../../utils/errorHandlers/catchAsyncError.js";
+import { createUserService, deleteUserService, getAllUsersService, getUserByIdService, loginUserService, updateUserService } from "../../services/userServices/index.js";
+
+export const createUser = catchAsyncError(async (req, res) => {
+  const { status, json } = await createUserService(req.body);
+  return res.status(status).json(json);
+});
+
+export const loginUser = catchAsyncError(async (req, res) => {
+  const { email, password } = req.body;
+  const { status, json } = await loginUserService(email, password);
+  return res.status(status).json(json);
+});
+
+export const updateUser = catchAsyncError(async (req, res) => {
+  const { id } = req.params;
+  const { status, json } = await updateUserService(id, req.body);
+  return res.status(status).json(json);
+});
+
+export const deleteUser = catchAsyncError(async (req, res) => {
+  const { id } = req.params;
+  const { status, json } = await deleteUserService(id);
+  return res.status(status).json(json);
+});
+
+export const getAllUsers = catchAsyncError(async (req, res) => {
+  const { status, json } = await getAllUsersService();
+  return res.status(status).json(json);
+});
+
+export const getUserById = catchAsyncError(async (req, res) => {
+  const { id } = req.params;
+  const { status, json } = await getUserByIdService(id);
+  return res.status(status).json(json);
+});

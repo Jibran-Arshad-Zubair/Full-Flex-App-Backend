@@ -3,30 +3,27 @@ import { COLLECTIONS } from "../../utils/constants/collections.js";
 export default function UsersModel({ Schema, model, models }) {
   const userSchema = new Schema(
     {
-      avatar: {
+      profilePhoto: {
         type: String,
         default: null,
       },
       email: {
         type: String,
         required: true,
+        unique: true,
+        match: /.+\@.+\..+/,
       },
-      firstName: {
+      fullName: {
         type: String,
         default: null,
       },
-      lastName: {
+      userName: {
         type: String,
-        default: null,
+        unique: true,
       },
       phoneNumber: {
         type: String,
         default: null,
-      },
-      role: {
-        type: String,
-        enum: ["admin", "owner", "member"],
-        required: true,
       },
       status: {
         type: String,
@@ -40,10 +37,10 @@ export default function UsersModel({ Schema, model, models }) {
         select: false,
       },
 
-      organization: {
-        type: Schema.Types.ObjectId,
-        ref: COLLECTIONS.ORGANIZATIONS,
-        default: null,
+      gender: {
+        type: String,
+        enum: ["male", "female"],
+        default: "male",
       },
     },
     {
