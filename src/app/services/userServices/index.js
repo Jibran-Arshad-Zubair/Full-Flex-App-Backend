@@ -7,7 +7,7 @@ import { createHash, createToken, verifyHash } from "../../../utils/tokenService
 import { Users } from "../../models/index.js";
 
 export async function createUserService(data) {
-  const { email, userName , password, ...rest } = data;
+  const { email, userName , password,gender,...rest } = data;
 
   if (!email || !password || !userName) {
     return {
@@ -25,10 +25,13 @@ export async function createUserService(data) {
   }
 
   const hashedPassword = await createHash(password);
+  const maleProfilePhoto = `https://avatar.iran.liara.run/public/boy?username=${userName}`;
+  const femaleProfilePhoto = `https://avatar.iran.liara.run/public/girl?username=${userName}`;
 
   const newUser = await Users.create({
     email,
     userName,
+    profilePhoto:gender==="male"?maleProfilePhoto:femaleProfilePhoto,
     password: hashedPassword,
     ...rest,
   });
@@ -72,6 +75,36 @@ export async function loginUserService(email, password) {
     json: successfulResponse("Login successful", { token, user }),
   };
 }
+
+export async function getOtherUsersService(id) {
+
+  try {
+     if (!isValidId(id)) {
+    return {
+      status: 400,
+      json: invalidResponse("Invalid user ID."),
+    };
+  }
+  const loggedUserId = id;
+  const users = await Users.find({ _id: { $ne: loggedUserId } });
+  if (!users) {
+    return {
+      status: 404,
+      json: invalidResponse("No users found."),
+    };
+  }
+  return {
+    status: 200,
+    json: successfulResponse("Users retrieved successfully", users),
+  };
+    
+  } catch (error) {
+    console.error(error);
+  }
+ 
+  
+}
+
 
 export async function updateUserService(id, updateData) {
   if (!isValidId(id)) {
