@@ -3,16 +3,22 @@ import {
   successfulResponse,
   invalidResponse,
 } from "../../../utils/responses/responseHandler.js";
-import { createHash, createToken, verifyHash } from "../../../utils/tokenService/index.js";
+import {
+  createHash,
+  createToken,
+  verifyHash,
+} from "../../../utils/tokenService/index.js";
 import { Users } from "../../models/index.js";
 
 export async function createUserService(data) {
-  const { email, userName , password,gender,...rest } = data;
+  const { email, userName, password, gender, ...rest } = data;
 
   if (!email || !password || !userName) {
     return {
       status: 400,
-      json: invalidResponse("Email, User Name , and Password are required fields."),
+      json: invalidResponse(
+        "Email, User Name , and Password are required fields."
+      ),
     };
   }
 
@@ -31,7 +37,7 @@ export async function createUserService(data) {
   const newUser = await Users.create({
     email,
     userName,
-    profilePhoto:gender==="male"?maleProfilePhoto:femaleProfilePhoto,
+    profilePhoto: gender === "male" ? maleProfilePhoto : femaleProfilePhoto,
     password: hashedPassword,
     ...rest,
   });
@@ -77,34 +83,35 @@ export async function loginUserService(email, password) {
 }
 
 export async function getOtherUsersService(id) {
-
   try {
-     if (!isValidId(id)) {
-    return {
-      status: 400,
-      json: invalidResponse("Invalid user ID."),
-    };
-  }
-  const loggedUserId = id;
-  const users = await Users.find({ _id: { $ne: loggedUserId } });
-  if (!users) {
-    return {
-      status: 404,
-      json: invalidResponse("No users found."),
-    };
-  }
-  return {
-    status: 200,
-    json: successfulResponse("Users retrieved successfully", users),
-  };
-    
-  } catch (error) {
-    console.error(error);
-  }
- 
-  
-}
+    if (!isValidId(id)) {
+      return {
+        status: 400,
+        json: invalidResponse("Invalid user ID."),
+      };
+    }
 
+    const users = await Users.find({ _id: { $ne: id } });
+
+    if (!users || users.length === 0) {
+      return {
+        status: 404,
+        json: invalidResponse("No other users found."),
+      };
+    }
+
+    return {
+      status: 200,
+      json: successfulResponse("Other users retrieved successfully", users),
+    };
+  } catch (error) {
+    console.error("Error in getOtherUsersService:", error);
+    return {
+      status: 500,
+      json: invalidResponse("An error occurred while fetching users."),
+    };
+  }
+}
 
 export async function updateUserService(id, updateData) {
   if (!isValidId(id)) {
