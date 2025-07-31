@@ -59,9 +59,9 @@ export async function getMessageService(senderId, receiverId) {
 
     const conversation = await Conversations.findOne({
       participants: { $all: [senderId, receiverId] },
-    });
+    }).populate("messages");
 
-    console.log("conversation",conversation.messages);
+    // console.log("conversation",conversation);
 
     if (!conversation) {
       return {
