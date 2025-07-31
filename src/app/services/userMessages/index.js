@@ -48,3 +48,39 @@ export async function sendMessageService(senderId, receiverId, message) {
   }
 }
 
+export async function getMessageService(senderId, receiverId) {
+  try {
+    if (!isValidId(senderId) || !isValidId(receiverId)) {
+      return {
+        status: 400,
+        json: invalidResponse("Invalid user ID."),
+      };
+    }
+
+    const conversation = await Conversations.findOne({
+      participants: { $all: [senderId, receiverId] },
+    });
+
+    console.log("conversation",conversation.messages);
+
+    if (!conversation) {
+      return {
+        status: 404,
+        json: invalidResponse("Conversation not found."),
+      };
+    }
+
+    const messages = await Messages.find({ _id: { $in: conversation.messages } });
+
+    return {
+      status: 200,
+      json: successfulResponse("Messages retrieved successfully", messages),
+    };
+  } catch (error) {
+    console.error("Error in getMessageService:", error);
+    return {
+      status: 500,
+      json: invalidResponse("An error occurred while fetching messages."),
+    };
+  }
+}
