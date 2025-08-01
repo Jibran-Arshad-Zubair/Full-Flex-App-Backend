@@ -20,6 +20,8 @@ export default function UsersModel({ Schema, model, models }) {
       userName: {
         type: String,
         required: true,
+         unique: false,  
+         index: true,  
         
       },
       phoneNumber: {
