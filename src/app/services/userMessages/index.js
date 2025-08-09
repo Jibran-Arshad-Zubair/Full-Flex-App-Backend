@@ -50,6 +50,7 @@ export async function sendMessageService(senderId, receiverId, message) {
 
 export async function getMessageService(senderId, receiverId) {
   try {
+    console.log("senderId",senderId,"receiverId",receiverId);
     if (!isValidId(senderId) || !isValidId(receiverId)) {
       return {
         status: 400,
