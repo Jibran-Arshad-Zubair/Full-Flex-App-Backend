@@ -5,6 +5,7 @@ import cors from "cors";
 import PaymentRoutes from "./src/routes/paymentRoutes.js";
 import UserRoutes from "./src/routes/userRoutes.js";
 import MessageRoutes from "./src/routes/messageRoutes.js";
+import CourseRoutes from "./src/routes/courseRoutes.js";
 dotenv.config();
 connectDB();
 
@@ -19,6 +20,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use("/api/v1/payments", PaymentRoutes);
 app.use("/api/v1/users", UserRoutes );
 app.use("/api/v1/messages", MessageRoutes);
+app.use("/api/v1/courses", CourseRoutes);
 
 
 const PORT = process.env.PORT || 4000;
