@@ -2,7 +2,7 @@ import { successfulResponse, invalidResponse } from "../../../utils/responses/re
 import { Courses } from "../../models/index.js";
 import isValidId from "../../../utils/validations/isValidId.js";
 export async function createCourseService(data) {
-  const { title, description, price, teacher, category, thumbnail } = data;
+  const { title, description, price, teacher, category, thumbnail, videos } = data;
 
   if (!title || !description || !price || !teacher || !category) {
     return {
@@ -19,6 +19,7 @@ export async function createCourseService(data) {
       teacher,
       category,
       thumbnail: thumbnail || null,
+      videos: videos || [],
     });
 
     return {
