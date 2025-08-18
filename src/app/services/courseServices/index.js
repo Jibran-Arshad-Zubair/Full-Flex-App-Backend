@@ -104,7 +104,7 @@ export async function getCourseByIdService(id) {
   }
 }
 
-// Update Course
+
 export async function updateCourseService(id, updateData, userId) {
   if (!isValidId(id)) {
     return {
@@ -114,7 +114,7 @@ export async function updateCourseService(id, updateData, userId) {
   }
 
   try {
-    // Check if user is the course teacher
+    
     const course = await Courses.findById(id);
     if (!course) {
       return {
@@ -149,7 +149,7 @@ export async function updateCourseService(id, updateData, userId) {
   }
 }
 
-// Delete Course
+
 export async function deleteCourseService(id, userId) {
   if (!isValidId(id)) {
     return {
@@ -159,7 +159,7 @@ export async function deleteCourseService(id, userId) {
   }
 
   try {
-    // Check if user is the course teacher
+  
     const course = await Courses.findById(id);
     if (!course) {
       return {
@@ -167,21 +167,13 @@ export async function deleteCourseService(id, userId) {
         json: invalidResponse("Course not found"),
       };
     }
-
-    if (course.teacher.toString() !== userId.toString()) {
-      return {
-        status: 403,
-        json: invalidResponse("Unauthorized to delete this course"),
-      };
-    }
-
     await Courses.findByIdAndDelete(id);
     return {
-      status: 204,
+      status: 200,
       json: successfulResponse("Course deleted successfully"),
     };
   } catch (error) {
-    console.error("Error in deleteCourseService:", error);
+    console.error("Error in deleteCourseService", error);
     return {
       status: 500,
       json: invalidResponse("Failed to delete course"),
