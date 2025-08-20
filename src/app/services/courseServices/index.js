@@ -3,7 +3,6 @@ import { Courses } from "../../models/index.js";
 import isValidId from "../../../utils/validations/isValidId.js";
 export async function createCourseService(data) {
   const { title, description, price, teacher, category, thumbnail, videos } = data;
-
   if (!title || !description || !price || !teacher || !category) {
     return {
       status: 400,
@@ -18,8 +17,8 @@ export async function createCourseService(data) {
       price,
       teacher,
       category,
-      thumbnail: thumbnail || null,
-      videos: videos || [],
+      thumbnail: thumbnail ? `/uploads/${thumbnail}` : null,
+      videos: videos.length ? videos.map(v => `/uploads/${v}`) : [],
     });
 
     return {

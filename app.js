@@ -6,6 +6,7 @@ import PaymentRoutes from "./src/routes/paymentRoutes.js";
 import UserRoutes from "./src/routes/userRoutes.js";
 import MessageRoutes from "./src/routes/messageRoutes.js";
 import CourseRoutes from "./src/routes/courseRoutes.js";
+import path from "path";
 dotenv.config();
 connectDB();
 
@@ -15,6 +16,8 @@ app.use(cors());
 app.use(express.json());
 
 app.use(express.urlencoded({ extended: false }));
+
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 // API base route
 app.use("/api/v1/payments", PaymentRoutes);

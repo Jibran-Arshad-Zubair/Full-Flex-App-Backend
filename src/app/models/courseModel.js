@@ -36,13 +36,13 @@ export default function CourseModel({ Schema, model, models }) {
         {
           title: String,
           url: String,
-          duration: String,
+         
         },
       ],
       category: {
         type: String,
-        enum: ["web-development", "ai", "design", "marketing"],
-        default: "web-development",
+        required: true,
+       
       },
       ratings: [
         {

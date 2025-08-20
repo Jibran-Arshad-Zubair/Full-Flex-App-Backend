@@ -2,9 +2,13 @@ import catchAsyncError from "../../../utils/errorHandlers/catchAsyncError.js";
 import { createCourseService, deleteCourseService, getAllCoursesService, getCourseByIdService } from "../../services/courseServices/index.js";
 
 export const createCourse = catchAsyncError(async (req, res) => {
+  const thumbnail = req.files?.thumbnail ? req.files.thumbnail[0].filename : null;
+   const videos = req.files?.videos ? req.files.videos.map((v) => v.filename) : [];
   const { status, json } = await createCourseService({
     ...req.body,
-    teacher: req.user.id, 
+    teacher: req.user.id,
+    thumbnail,
+    videos,
   });
   return res.status(status).json(json);
 });
