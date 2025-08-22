@@ -18,7 +18,7 @@ export async function createCourseService(data) {
       teacher,
       category,
       thumbnail: thumbnail ? `/uploads/${thumbnail}` : null,
-      videos: videos.length ? videos.map(v => `/uploads/${v}`) : [],
+      videos: Array.isArray(videos) ? videos : [],
     });
 
     return {
