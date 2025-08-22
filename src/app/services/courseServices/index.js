@@ -182,42 +182,42 @@ export async function deleteCourseService(id, userId) {
 }
 
 // Add Video to Course
-export async function addVideoToCourseService(courseId, videoData, userId) {
-  if (!isValidId(courseId)) {
-    return {
-      status: 400,
-      json: invalidResponse("Invalid course ID"),
-    };
-  }
+// export async function addVideoToCourseService(courseId, videoData, userId) {
+//   if (!isValidId(courseId)) {
+//     return {
+//       status: 400,
+//       json: invalidResponse("Invalid course ID"),
+//     };
+//   }
 
-  try {
-    const course = await Courses.findById(courseId);
-    if (!course) {
-      return {
-        status: 404,
-        json: invalidResponse("Course not found"),
-      };
-    }
+//   try {
+//     const course = await Courses.findById(courseId);
+//     if (!course) {
+//       return {
+//         status: 404,
+//         json: invalidResponse("Course not found"),
+//       };
+//     }
 
-    if (course.teacher.toString() !== userId.toString()) {
-      return {
-        status: 403,
-        json: invalidResponse("Unauthorized to add videos to this course"),
-      };
-    }
+//     if (course.teacher.toString() !== userId.toString()) {
+//       return {
+//         status: 403,
+//         json: invalidResponse("Unauthorized to add videos to this course"),
+//       };
+//     }
 
-    course.videos.push(videoData);
-    await course.save();
+//     course.videos.push(videoData);
+//     await course.save();
 
-    return {
-      status: 200,
-      json: successfulResponse("Video added successfully", course),
-    };
-  } catch (error) {
-    console.error("Error in addVideoToCourseService:", error);
-    return {
-      status: 500,
-      json: invalidResponse("Failed to add video"),
-    };
-  }
-}
+//     return {
+//       status: 200,
+//       json: successfulResponse("Video added successfully", course),
+//     };
+//   } catch (error) {
+//     console.error("Error in addVideoToCourseService:", error);
+//     return {
+//       status: 500,
+//       json: invalidResponse("Failed to add video"),
+//     };
+//   }
+// }
