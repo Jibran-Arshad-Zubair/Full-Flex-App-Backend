@@ -44,6 +44,13 @@ export default function CourseModel({ Schema, model, models }) {
         required: true,
        
       },
+
+      status : {
+        type: String,
+        default: "pending",
+        enum: ["active", "inactive" , "pending"],
+      },
+
       ratings: [
         {
           user: { type: Schema.Types.ObjectId, ref: COLLECTIONS.USERS },

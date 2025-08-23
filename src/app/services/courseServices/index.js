@@ -28,6 +28,7 @@ export async function createCourseService(data) {
       description,
       price,
       teacher,
+      status: "pending",
       category,
       thumbnail: thumbnail ? `${BASE_URL}/uploads/${thumbnail}` : null,
       videos: Array.isArray(videos) ? videos : [],
