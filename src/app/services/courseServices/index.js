@@ -1,4 +1,7 @@
-import {successfulResponse,invalidResponse,} from "../../../utils/responses/responseHandler.js";
+import {
+  successfulResponse,
+  invalidResponse,
+} from "../../../utils/responses/responseHandler.js";
 import { Courses } from "../../models/index.js";
 import isValidId from "../../../utils/validations/isValidId.js";
 
@@ -67,7 +70,6 @@ export async function getAllCoursesService(queryParams = {}) {
       .limit(Number(limit))
       .populate("teacher", "fullName email");
 
- 
     courses = courses.map((course) => {
       if (course.thumbnail && !course.thumbnail.startsWith("http")) {
         course.thumbnail = `${BASE_URL}${course.thumbnail}`;
@@ -109,7 +111,6 @@ export async function getCourseByIdService(id) {
       };
     }
 
-   
     if (course.thumbnail && !course.thumbnail.startsWith("http")) {
       course.thumbnail = `${BASE_URL}${course.thumbnail}`;
     }
@@ -127,21 +128,21 @@ export async function getCourseByIdService(id) {
   }
 }
 
-export async function updateCourseService(id, updateData, userId) {
+export async function updateCourseService(
+  id,
+  updateData,
+  userId,
+  thumbnail,
+  videos
+) {
   if (!isValidId(id)) {
-    return {
-      status: 400,
-      json: invalidResponse("Invalid course ID"),
-    };
+    return { status: 400, json: invalidResponse("Invalid course ID") };
   }
 
   try {
     const course = await Courses.findById(id);
     if (!course) {
-      return {
-        status: 404,
-        json: invalidResponse("Course not found"),
-      };
+      return { status: 404, json: invalidResponse("Course not found") };
     }
 
     if (course.teacher.toString() !== userId.toString()) {
@@ -151,11 +152,22 @@ export async function updateCourseService(id, updateData, userId) {
       };
     }
 
+ 
+    if (thumbnail) {
+      updateData.thumbnail = `${BASE_URL}/uploads/${thumbnail}`;
+    }
+
+   
+    if (videos) {
+      updateData.videos = Array.isArray(videos) ? videos : [];
+    }
+
     const updatedCourse = await Courses.findByIdAndUpdate(id, updateData, {
       new: true,
       runValidators: true,
     }).populate("teacher", "fullName email");
 
+   
     if (
       updatedCourse.thumbnail &&
       !updatedCourse.thumbnail.startsWith("http")
@@ -168,11 +180,8 @@ export async function updateCourseService(id, updateData, userId) {
       json: successfulResponse("Course updated successfully", updatedCourse),
     };
   } catch (error) {
-    console.error("Error in updateCourseService:", error);
-    return {
-      status: 500,
-      json: invalidResponse("Failed to update course"),
-    };
+    console.error("Error in updateCourseService", error);
+    return { status: 500, json: invalidResponse("Failed to update course") };
   }
 }
 
