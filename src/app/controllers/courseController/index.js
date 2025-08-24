@@ -16,9 +16,10 @@ export const createCourse = catchAsyncError(async (req, res) => {
 });
 
 export const getAllCourses = catchAsyncError(async (req, res) => {
-  const { status, json } = await getAllCoursesService(req.query);
+  const { status, json } = await getAllCoursesService(req.query, req.user.id);
   return res.status(status).json(json);
 });
+
 
 export const getSingleCourse = catchAsyncError(async (req , res ) => {
   const { id } = req.params;

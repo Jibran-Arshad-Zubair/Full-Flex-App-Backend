@@ -32,6 +32,7 @@ export async function createCourseService(data) {
       category,
       thumbnail: thumbnail ? `${BASE_URL}/uploads/${thumbnail}` : null,
       videos: Array.isArray(videos) ? videos : [],
+      createdBy: teacher,
     });
 
     return {
@@ -47,11 +48,11 @@ export async function createCourseService(data) {
   }
 }
 
-export async function getAllCoursesService(queryParams = {}) {
+export async function getAllCoursesService(queryParams = {} , userId) {
   try {
     const { category, price, sort, limit = 10 } = queryParams;
 
-    const filter = {};
+    const filter = { createdBy: userId };
     if (category) filter.category = category;
     if (price) {
       if (price.gte) filter.price = { $gte: Number(price.gte) };

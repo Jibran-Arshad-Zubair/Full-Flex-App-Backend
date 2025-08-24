@@ -58,6 +58,12 @@ export default function CourseModel({ Schema, model, models }) {
           review: String,
         },
       ],
+
+       createdBy: {
+        type: Schema.Types.ObjectId,
+        ref: COLLECTIONS.USERS,
+        required: true,
+      },
     },
     {
       collection: COLLECTIONS.COURSES,
