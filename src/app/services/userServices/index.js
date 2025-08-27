@@ -1,13 +1,6 @@
 import isValidId from "../../../utils/validations/isValidId.js";
-import {
-  successfulResponse,
-  invalidResponse,
-} from "../../../utils/responses/responseHandler.js";
-import {
-  createHash,
-  createToken,
-  verifyHash,
-} from "../../../utils/tokenService/index.js";
+import {successfulResponse,invalidResponse} from "../../../utils/responses/responseHandler.js";
+import {createHash,createToken,verifyHash} from "../../../utils/tokenService/index.js";
 import { Users } from "../../models/index.js";
 
 export async function createUserService(data) {
@@ -200,3 +193,41 @@ export async function getUserByIdService(id) {
     json: successfulResponse("User found successfully", user),
   };
 }
+
+export async function handleChangePassword(body, userId) {
+    const { oldPassword, newPassword } = body;
+
+    if (!oldPassword || !newPassword) {
+      return {
+        status: 400,
+        json: { success: false, message: "Old and new password are required." },
+      };
+    }
+
+    const user = await Users.findById(userId).select('+password');
+    if (!user) {
+      return {
+        status: 404,
+        json: { success: false, message: "User not found!" },
+      };
+    }
+
+   
+    const isMatch = await verifyHash(user.password, oldPassword);
+    if (!isMatch) {
+      return {
+        status: 400,
+        json: { success: false, message: "Old password is incorrect!" },
+      };
+    }
+
+  
+    const hashedPassword = await createHash(newPassword);
+    user.password = hashedPassword;
+    await user.save();
+
+    return {
+      status: 200,
+      json: { success: true, message: "Password updated successfully!" },
+    };
+  }
