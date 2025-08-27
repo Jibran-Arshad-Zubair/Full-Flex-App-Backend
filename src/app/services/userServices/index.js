@@ -2,6 +2,9 @@ import isValidId from "../../../utils/validations/isValidId.js";
 import {successfulResponse,invalidResponse} from "../../../utils/responses/responseHandler.js";
 import {createHash,createToken,verifyHash} from "../../../utils/tokenService/index.js";
 import { Users } from "../../models/index.js";
+import { OAuth2Client } from "google-auth-library";
+
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 export async function createUserService(data) {
   const { email, userName, password, gender, ...rest } = data;
@@ -221,7 +224,6 @@ export async function handleChangePassword(body, userId) {
       };
     }
 
-  
     const hashedPassword = await createHash(newPassword);
     user.password = hashedPassword;
     await user.save();
@@ -230,4 +232,56 @@ export async function handleChangePassword(body, userId) {
       status: 200,
       json: { success: true, message: "Password updated successfully!" },
     };
+  }
+
+  export async function handleGoogleLogin(body) {
+    try {
+      const { token } = body; 
+      if (!token) {
+        return { status: 400, json: invalidResponse("Google token is required!") };
+      }
+
+      const ticket = await client.verifyIdToken({
+        idToken: token,
+        audience: process.env.GOOGLE_CLIENT_ID,
+      });
+
+      const payload = ticket.getPayload();
+      const { email, name, picture } = payload;
+
+      if (!email) {
+        return { status: 400, json: invalidResponse("Google login failed! No email found.") };
+      }
+
+      let user = await Users.findOne({ email });
+      if (!user) {
+        user = await Users.create({
+          username: name?.toLowerCase().replace(/\s+/g, "_"),
+          email,
+          picture,
+          role: "user",
+          password: null,
+        });
+      }
+
+      const payloadData = { id: user._id, email: user.email};
+      const appToken = createToken(payloadData);
+
+      const userObj = user.toObject();
+      delete userObj.password;
+
+      return {
+        status: 200,
+        json: successfulResponse("Google login successful!", {
+          user: userObj,
+          token: appToken,
+        }),
+      };
+    } catch (error) {
+      console.error("Error in handleGoogleLogin:", error);
+      return {
+        status: 500,
+        json: invalidResponse("Google login failed!"),
+      };
+    }
   }
