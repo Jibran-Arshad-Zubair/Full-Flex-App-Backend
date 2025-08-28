@@ -42,7 +42,7 @@ export default function UsersModel({ Schema, model, models }) {
 
       gender: {
         type: String,
-        enum: ["male", "female"],
+        enum: ["male", "female", "other"],
         default: "male",
       },
     },
