@@ -14,14 +14,10 @@ export const loginUser = catchAsyncError(async (req, res) => {
 
 export const updateUser = catchAsyncError(async (req, res) => {
   const { id } = req.params;
-  const updateData = {
-    ...req.body,
-  };
-
+  const updateData = { ...req.body};
   if (req.file) {
     updateData.profilePhoto = `/uploads/${req.file.filename}`; 
   }
-
   const { status, json } = await updateUserService(id, updateData);
   return res.status(status).json(json);
 });
