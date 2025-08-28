@@ -7,7 +7,8 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import { emailService } from "../../../utils/nodemailer/nodemailer-services.js";
-
+const BASE_URL =
+  process.env.BASE_URL || `http://localhost:${process.env.PORT || 5000}`;
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);

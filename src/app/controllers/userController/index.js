@@ -1,6 +1,9 @@
 import catchAsyncError from "../../../utils/errorHandlers/catchAsyncError.js";
 import { createUserService, deleteUserService, getAllUsersService, getOtherUsersService, getUserByIdService, handleChangePassword, handleForgotPassword, handleGoogleLogin, loginUserService, updateUserService } from "../../services/userServices/index.js";
 
+const BASE_URL =
+  process.env.BASE_URL || `http://localhost:${process.env.PORT || 5000}`;
+
 export const createUser = catchAsyncError(async (req, res) => {
   const { status, json } = await createUserService(req.body);
   return res.status(status).json(json);
@@ -15,8 +18,8 @@ export const loginUser = catchAsyncError(async (req, res) => {
 export const updateUser = catchAsyncError(async (req, res) => {
   const { id } = req.params;
   const updateData = { ...req.body};
-  if (req.file) {
-    updateData.profilePhoto = `/uploads/${req.file.filename}`; 
+if (req.file) {
+    updateData.profilePhoto = `${BASE_URL}/uploads/${req.file.filename}`; 
   }
   const { status, json } = await updateUserService(id, updateData);
   return res.status(status).json(json);
