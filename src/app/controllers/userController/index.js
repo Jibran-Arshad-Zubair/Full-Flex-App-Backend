@@ -1,5 +1,5 @@
 import catchAsyncError from "../../../utils/errorHandlers/catchAsyncError.js";
-import { createUserService, deleteUserService, getAllUsersService, getOtherUsersService, getUserByIdService, handleChangePassword, handleGoogleLogin, loginUserService, updateUserService } from "../../services/userServices/index.js";
+import { createUserService, deleteUserService, getAllUsersService, getOtherUsersService, getUserByIdService, handleChangePassword, handleForgotPassword, handleGoogleLogin, loginUserService, updateUserService } from "../../services/userServices/index.js";
 
 export const createUser = catchAsyncError(async (req, res) => {
   const { status, json } = await createUserService(req.body);
@@ -49,5 +49,10 @@ export  const changePassword = catchAsyncError(async function(req, res) {
 
 export  const googleLogin = catchAsyncError (async function(req, res) {
     const { status, json } = await handleGoogleLogin(req.body);
+    return res.status(status).json(json);
+  });
+
+  export const forgotPassword = catchAsyncError(async function(req, res) {
+    const { status, json } = await handleForgotPassword(req.body);
     return res.status(status).json(json);
   });

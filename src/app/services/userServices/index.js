@@ -3,6 +3,14 @@ import {successfulResponse,invalidResponse} from "../../../utils/responses/respo
 import {createHash,createToken,verifyHash} from "../../../utils/tokenService/index.js";
 import { Users } from "../../models/index.js";
 import { OAuth2Client } from "google-auth-library";
+import path from "path";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+import { emailService } from "../../../utils/nodemailer/nodemailer-services.js";
+
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -284,4 +292,37 @@ export async function handleChangePassword(body, userId) {
         json: invalidResponse("Google login failed!"),
       };
     }
+  }
+
+ export   async function handleForgotPassword(body) {
+    const { email } = body;
+    const user = await Users.findOne({ email });
+
+    if (!user) {
+      return {
+        status: 400,
+        json: invalidResponse("Email not found!"),
+      };
+    }
+
+    const resetToken = createToken({ id: user._id }, "1h");
+     const resetLink = `http://localhost:5173/reset-password?token=${resetToken}`;
+
+    const emailTemplatePath = path.join(__dirname, '../../../utils/emailService/templates/forgetPassTemplate.ejs');
+    const emailData = {
+      user_email: user.email,
+      reset_link: resetLink,
+      subject: 'Password Reset Request',
+    };
+
+    try {
+      await emailService.sendPasswordResetEmail(emailData, emailTemplatePath);
+    } catch (error) {
+      console.error('Error sending password reset email:', error);
+    }
+
+    return {
+      status: 200,
+      json: successfulResponse("Password reset email sent!"),
+    };
   }

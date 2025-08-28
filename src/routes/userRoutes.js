@@ -1,5 +1,5 @@
 import express from "express";
-import { changePassword, createUser, deleteUser, getAllUsers, getOtherUsers, getUserById, googleLogin, loginUser, updateUser } from "../app/controllers/userController/index.js";
+import { changePassword, createUser, deleteUser, forgotPassword, getAllUsers, getOtherUsers, getUserById, googleLogin, loginUser, updateUser } from "../app/controllers/userController/index.js";
 import { checkAuth } from "../app/middlewares/handlers/checkAuth.js";
 
 const router = express.Router();
@@ -13,5 +13,6 @@ router.delete("/delete/:id", checkAuth, deleteUser);
 router.get("/get-other-users/:id", checkAuth, getOtherUsers);
 router.put("/change-password", checkAuth, changePassword);
 router.post("/google-login", googleLogin);
+router.post("/forgot-password", forgotPassword);
 
 export default router;
