@@ -1,5 +1,5 @@
 import catchAsyncError from "../../../utils/errorHandlers/catchAsyncError.js";
-import { createUserService, deleteUserService, getAllUsersService, getOtherUsersService, getUserByIdService, handleChangePassword, handleForgotPassword, handleGoogleLogin, loginUserService, updateUserService } from "../../services/userServices/index.js";
+import { createUserService, deleteUserService, getAllUsersService, getOtherUsersService, getUserByIdService, handleChangePassword, handleForgotChangePassword, handleGoogleLogin, loginUserService, sendOTPService, updateUserService } from "../../services/userServices/index.js";
 
 const BASE_URL =
   process.env.BASE_URL || `http://localhost:${process.env.PORT || 5000}`;
@@ -59,7 +59,14 @@ export  const googleLogin = catchAsyncError (async function(req, res) {
     return res.status(status).json(json);
   });
 
-  export const forgotPassword = catchAsyncError(async function(req, res) {
-    const { status, json } = await handleForgotPassword(req.body);
+export  const sendOTP = catchAsyncError (async function(req, res) {
+    const { status, json } = await sendOTPService(req.body);
+    return res.status(status).json(json);
+  });
+
+  // Forgot Change Password
+
+export  const forgotChangePassword = catchAsyncError (async function(req, res) {
+    const { status, json } = await handleForgotChangePassword(req.body);
     return res.status(status).json(json);
   });

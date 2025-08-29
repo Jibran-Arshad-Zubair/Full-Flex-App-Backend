@@ -5,17 +5,17 @@ import ejs from 'ejs';
 config();
 
 class NodemailerServices {
-//   getNodemailerTransporter = async () => {
-//     return createTransport({
-//       host: process.env.SMTP_HOST,
-//       port: parseInt(process.env.SMTP_PORT || '465'),
-//       service: process.env.SMTP_SERVICE,
-//       auth: {
-//         user: process.env.SMTP_MAIL,
-//         pass: process.env.SMTP_PASSWORD,
-//       },
-//     });
-//   };
+  getNodemailerTransporter = async () => {
+    return createTransport({
+      host: process.env.SMTP_HOST,
+      port: parseInt(process.env.SMTP_PORT || '465'),
+      service: process.env.SMTP_SERVICE,
+      auth: {
+        user: process.env.SMTP_MAIL,
+        pass: process.env.SMTP_PASSWORD,
+      },
+    });
+  };
 
   sendEmail = async (options) => {
     const transporter = await this.getNodemailerTransporter();
@@ -48,17 +48,17 @@ class NodemailerServices {
     }
   };
 
-//   sendEmailToAdmin = async (data, templatePath) => {
-//     return this.sendEmailToUser(data, templatePath, 'admin');
-//   };
+  sendEmailToAdmin = async (data, templatePath) => {
+    return this.sendEmailToUser(data, templatePath, 'admin');
+  };
 
-//   sendEmailToPartner = async (data, templatePath) => {
-//     return this.sendEmailToUser(data, templatePath, 'partner');
-//   };
+  sendEmailToPartner = async (data, templatePath) => {
+    return this.sendEmailToUser(data, templatePath, 'partner');
+  };
 
-//   sendEmailToMember = async (data, templatePath) => {
-//     return this.sendEmailToUser(data, templatePath, 'member');
-//   };
+  sendEmailToMember = async (data, templatePath) => {
+    return this.sendEmailToUser(data, templatePath, 'member');
+  };
 }
 
 export const emailService = new NodemailerServices();

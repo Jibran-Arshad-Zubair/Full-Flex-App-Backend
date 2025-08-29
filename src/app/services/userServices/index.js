@@ -6,7 +6,8 @@ import { OAuth2Client } from "google-auth-library";
 import path from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
-import { emailService } from "../../../utils/nodemailer/nodemailer-services.js";
+import { generateOTP } from "../../../utils/helpers/index.js";
+import { emailService } from "../../../utils/emailService/nodemailer-services.js";
 const BASE_URL =
   process.env.BASE_URL || `http://localhost:${process.env.PORT || 5000}`;
 
@@ -295,35 +296,78 @@ export async function handleChangePassword(body, userId) {
     }
   }
 
- export   async function handleForgotPassword(body) {
+ export async function sendOTPService(body) {
     const { email } = body;
-    const user = await Users.findOne({ email });
+    try {
+      const user = await Users.findOne({ email });
 
-    if (!user) {
+      if (!user) {
+        return {
+          status: 400,
+          json: invalidResponse("Email not found!"),
+        };
+      }
+
+      const otp = await generateOTP();
+
+      user.resetOtp = otp;
+      user.resetOtpExpires = Date.now() + 10 * 60 * 1000;
+      await user.save({ validateBeforeSave: false });
+      const ForgetTemplatePath = path.join(
+        __dirname,
+        "../../../templates/forgetPassTemplate.ejs"
+      );
+      const userData = {
+        user_email: user.email,
+        subject: "Forget Password OTP",
+        otp,
+      };
+      await emailService.sendEmailToUser(userData, ForgetTemplatePath);
+
+      return {
+        status: 200,
+        json: successfulResponse("OTP sent to your email!"),
+      };
+    } catch (err) {
+      console.error("Forgot Password Error:", err);
+      return {
+        status: 500,
+        json: invalidResponse("Something went wrong"),
+      };
+    }
+  }
+
+  export async function handleForgotChangePassword(body) {
+    const { email, code, newPassword } = body;
+
+    if (!email || !code || !newPassword) {
       return {
         status: 400,
-        json: invalidResponse("Email not found!"),
+        json: invalidResponse(
+          "Email, reset code and new password are required."
+        ),
       };
     }
 
-    const resetToken = createToken({ id: user._id }, "1h");
-     const resetLink = `http://localhost:5173/reset-password?token=${resetToken}`;
-
-    const emailTemplatePath = path.join(__dirname, '../../../utils/emailService/templates/forgetPassTemplate.ejs');
-    const emailData = {
-      user_email: user.email,
-      reset_link: resetLink,
-      subject: 'Password Reset Request',
-    };
-
-    try {
-      await emailService.sendPasswordResetEmail(emailData, emailTemplatePath);
-    } catch (error) {
-      console.error('Error sending password reset email:', error);
+    const user = await Users.findOne({
+      resetOtp: code,
+      resetOtpExpires: { $gt: Date.now() },
+    });
+    if (!user) {
+      return {
+        status: 401,
+        json: invalidResponse("Invalid or expired OTP"),
+      };
     }
+
+    const hashedPassword = await createHash(newPassword);
+    user.password = hashedPassword;
+    user.resetOtp = null; 
+    user.resetOtpExpires = null; 
+    await user.save();
 
     return {
       status: 200,
-      json: successfulResponse("Password reset email sent!"),
+      json: successfulResponse("Password updated successfully!"),
     };
   }

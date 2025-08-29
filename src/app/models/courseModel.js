@@ -36,20 +36,20 @@ export default function CourseModel({ Schema, model, models }) {
         {
           title: String,
           url: String,
-         
         },
       ],
       category: {
         type: String,
         required: true,
-       
       },
 
-      status : {
+      status: {
         type: String,
         default: "pending",
-        enum: ["active", "inactive" , "pending"],
+        enum: ["active", "inactive", "pending"],
       },
+      resetOtpExpires: { type: Date, default: null },
+      resetOtp: { type: String, default: null },
 
       ratings: [
         {
@@ -59,7 +59,7 @@ export default function CourseModel({ Schema, model, models }) {
         },
       ],
 
-       createdBy: {
+      createdBy: {
         type: Schema.Types.ObjectId,
         ref: COLLECTIONS.USERS,
         required: true,
