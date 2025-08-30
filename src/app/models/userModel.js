@@ -20,9 +20,8 @@ export default function UsersModel({ Schema, model, models }) {
       userName: {
         type: String,
         required: true,
-         unique: false,  
-         index: true,  
-        
+        unique: false,
+        index: true,
       },
       phoneNumber: {
         type: String,
@@ -44,6 +43,15 @@ export default function UsersModel({ Schema, model, models }) {
         type: String,
         enum: ["male", "female", "other"],
         default: "male",
+      },
+
+      resetOtp: {
+        type: String,
+        default: null,
+      },
+      resetOtpExpires: {
+        type: Date,
+        default: null,
       },
     },
     {

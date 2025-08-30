@@ -338,7 +338,7 @@ export async function handleChangePassword(body, userId) {
   }
 
   export async function handleForgotChangePassword(body) {
-    const { email, code, newPassword } = body;
+    const { email, otp: code, newPassword } = body;
 
     if (!email || !code || !newPassword) {
       return {

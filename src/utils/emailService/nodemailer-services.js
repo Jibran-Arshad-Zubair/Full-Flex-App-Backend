@@ -1,15 +1,13 @@
-import { createTransport } from 'nodemailer';
-import { config } from 'dotenv';
-import ejs from 'ejs';
+import { createTransport } from "nodemailer";
+import { config } from "dotenv";
+import ejs from "ejs";
 
 config();
 
 class NodemailerServices {
   getNodemailerTransporter = async () => {
     return createTransport({
-      host: process.env.SMTP_HOST,
-      port: parseInt(process.env.SMTP_PORT || '465'),
-      service: process.env.SMTP_SERVICE,
+      service: "gmail", // No need for host/port when using Gmail
       auth: {
         user: process.env.SMTP_MAIL,
         pass: process.env.SMTP_PASSWORD,
@@ -23,24 +21,25 @@ class NodemailerServices {
       const info = await transporter.sendMail(options);
       return info;
     } catch (error) {
-      console.error('Error in sendEmail:', error);
+      console.error("Error in sendEmail:", error);
       throw error;
     }
   };
 
- 
-  sendEmailToUser = async (data, templatePath, userType = 'user') => {
+  sendEmailToUser = async (data, templatePath, userType = "user") => {
     try {
       const template = await ejs.renderFile(templatePath, data);
       const mailOptions = {
-        from: process.env.EMAIL_FROM,
+        from: process.env.SMTP_MAIL, // use same Gmail
         to: data.user_email,
         subject: data.subject,
         html: template,
         cc: data.cc,
       };
       const response = await this.sendEmail(mailOptions);
-      console.log(`Email sent to ${userType}: ${data.user_email} with subject: ${data.subject}`);
+      console.log(
+        `Email sent to ${userType}: ${data.user_email} with subject: ${data.subject}`
+      );
       return response;
     } catch (error) {
       console.error(`Error in sendEmailTo${userType}: ${error.message}`);
@@ -49,15 +48,15 @@ class NodemailerServices {
   };
 
   sendEmailToAdmin = async (data, templatePath) => {
-    return this.sendEmailToUser(data, templatePath, 'admin');
+    return this.sendEmailToUser(data, templatePath, "admin");
   };
 
   sendEmailToPartner = async (data, templatePath) => {
-    return this.sendEmailToUser(data, templatePath, 'partner');
+    return this.sendEmailToUser(data, templatePath, "partner");
   };
 
   sendEmailToMember = async (data, templatePath) => {
-    return this.sendEmailToUser(data, templatePath, 'member');
+    return this.sendEmailToUser(data, templatePath, "member");
   };
 }
 
