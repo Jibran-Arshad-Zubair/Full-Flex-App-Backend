@@ -64,7 +64,7 @@ export  const sendOTP = catchAsyncError (async function(req, res) {
     return res.status(status).json(json);
   });
 
-  // Forgot Change Password
+
 
 export  const forgotChangePassword = catchAsyncError (async function(req, res) {
  
