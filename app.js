@@ -6,6 +6,7 @@ import PaymentRoutes from "./src/routes/paymentRoutes.js";
 import UserRoutes from "./src/routes/userRoutes.js";
 import MessageRoutes from "./src/routes/messageRoutes.js";
 import CourseRoutes from "./src/routes/courseRoutes.js";
+import ChatBotRoutes from "./src/routes/chatBotRoutes.js"
 import path from "path";
 import { app, server } from './src/app/socket/socket.js'; 
 dotenv.config();
@@ -21,6 +22,7 @@ app.use("/api/v1/payments", PaymentRoutes);
 app.use("/api/v1/users", UserRoutes);
 app.use("/api/v1/messages", MessageRoutes);
 app.use("/api/v1/courses", CourseRoutes);
+app.use("/api/v1/chatBot",ChatBotRoutes)
 
 const PORT = process.env.PORT || 5000;
 
