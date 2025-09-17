@@ -9,6 +9,8 @@ function getCurrentDateTime() {
   };
 }
 
+let chatHistory = [{ role: "system", content: "You are a helpful assistant. Use tools if needed." }];
+
 export const chatWithBot = async (req, res) => {
   try {
     const { message } = req.body;
@@ -17,13 +19,12 @@ export const chatWithBot = async (req, res) => {
       return res.status(400).json({ error: "Message is required" });
     }
 
+    chatHistory.push({ role: "user", content: message });
+
     // Step 1: Send user message with tool definitions
     const response = await openai.chat.completions.create({
       model: "gpt-4.1-mini",
-      messages: [
-        { role: "system", content: "You are a helpful assistant. Use tools if needed." },
-        { role: "user", content: message },
-      ],
+      messages: chatHistory,
       tools: [
         {
           type: "function",
@@ -33,7 +34,7 @@ export const chatWithBot = async (req, res) => {
           },
         },
       ],
-      tool_choice: "auto", // let AI decide when to call a tool
+      tool_choice: "auto",
     });
 
     const assistantMsg = response.choices[0]?.message;
@@ -47,8 +48,7 @@ export const chatWithBot = async (req, res) => {
       const secondResponse = await openai.chat.completions.create({
         model: "gpt-4.1-mini",
         messages: [
-          { role: "system", content: "You are a helpful assistant. Use tools if needed." },
-          { role: "user", content: message },
+          ...chatHistory,
           assistantMsg,
           {
             role: "tool",
@@ -59,11 +59,14 @@ export const chatWithBot = async (req, res) => {
       });
 
       const finalReply = secondResponse.choices[0]?.message?.content || "Sorry, I couldn't generate a response.";
+      chatHistory.push({ role: "assistant", content: finalReply });
       return res.json({ reply: finalReply });
     }
 
     // If no tool was needed, just return AI's normal response
     const reply = assistantMsg?.content || "Sorry, I couldn't generate a response.";
+    chatHistory.push({ role: "assistant", content: reply });
+
     res.json({ reply });
   } catch (error) {
     console.error("Chatbot Error:", error);
