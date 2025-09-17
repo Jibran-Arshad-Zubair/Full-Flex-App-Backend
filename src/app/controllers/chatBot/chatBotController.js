@@ -1,6 +1,5 @@
 import openai from "../../../config/openai.js";
 
-// Tool: get current date & time
 function getCurrentDateTime() {
   const now = new Date();
   return {
@@ -13,13 +12,18 @@ let chatHistory = [{ role: "system", content: "You are a helpful assistant. Use 
 
 export const chatWithBot = async (req, res) => {
   try {
-    const { message } = req.body;
+    const { message ,fileText } = req.body;
 
     if (!message) {
       return res.status(400).json({ error: "Message is required" });
     }
 
-    chatHistory.push({ role: "user", content: message });
+    let userPrompt = message;
+    if(fileText && fileText.trim()) {
+      userPrompt = `Here is the document text:\n${fileText}\n\nUser question: ${message}`;
+    }
+
+    chatHistory.push({ role: "user", content: userPrompt });
 
     // Step 1: Send user message with tool definitions
     const response = await openai.chat.completions.create({
