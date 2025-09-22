@@ -9,6 +9,11 @@ function getCurrentDateTime() {
 }
 
 let chatHistory = [{ role: "system", content: "You are a helpful assistant. Use tools if needed." }];
+ 
+function isUrl(text) {
+  const urlRegex = /(https?:\/\/[^\s]+)/g;
+  return urlRegex.test(text);
+}
 
 export const chatWithBot = async (req, res) => {
   try {
@@ -21,6 +26,12 @@ export const chatWithBot = async (req, res) => {
     let userPrompt = message;
     if(fileText && fileText.trim()) {
       userPrompt = `Here is the document text:\n${fileText}\n\nUser question: ${message}`;
+    }
+
+     if (isUrl(message)) {
+      userPrompt = `The user shared this link: "${message}". 
+      Please describe what this video or webpage is about in simple words. 
+      If it's a YouTube or video link, summarize the possible topic.`;
     }
 
     chatHistory.push({ role: "user", content: userPrompt });
