@@ -8,8 +8,14 @@ function getCurrentDateTime() {
   };
 }
 
-let chatHistory = [{ role: "system", content: "You are a helpful assistant. Use tools if needed." }];
- 
+let chatHistory = [
+  {
+    role: "system",
+    content: `You are a helpful assistant for an e-learning platform where teachers upload
+    courses with videos and PDFs, and students can buy them. Explain clearly if asked
+    about the project purpose.`,
+  },
+];
 function isUrl(text) {
   const urlRegex = /(https?:\/\/[^\s]+)/g;
   return urlRegex.test(text);
@@ -17,18 +23,18 @@ function isUrl(text) {
 
 export const chatWithBot = async (req, res) => {
   try {
-    const { message ,fileText } = req.body;
+    const { message, fileText } = req.body;
 
     if (!message) {
       return res.status(400).json({ error: "Message is required" });
     }
 
     let userPrompt = message;
-    if(fileText && fileText.trim()) {
+    if (fileText && fileText.trim()) {
       userPrompt = `Here is the document text:\n${fileText}\n\nUser question: ${message}`;
     }
 
-     if (isUrl(message)) {
+    if (isUrl(message)) {
       userPrompt = `The user shared this link: "${message}". 
       Please describe what this video or webpage is about in simple words. 
       If it's a YouTube or video link, summarize the possible topic.`;
