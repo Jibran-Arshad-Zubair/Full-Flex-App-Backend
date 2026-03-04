@@ -1,5 +1,5 @@
 import express from "express";
-import { changePassword, createUser, deleteUser, forgotChangePassword, getAllUsers, getOtherUsers, getUserById, googleLogin, loginUser, sendOTP, updateUser } from "../app/controllers/userController/index.js";
+import { changePassword, createUser, deleteUser, facebookLogin, forgotChangePassword, getAllUsers, getOtherUsers, getUserById, googleLogin, loginUser, sendOTP, updateUser } from "../app/controllers/userController/index.js";
 import { checkAuth } from "../app/middlewares/handlers/checkAuth.js";
 import { upload } from "../app/middlewares/multer/multer.js";
 import { validateRequest } from "../app/middlewares/validate-request.js";
@@ -17,6 +17,7 @@ router.put("/change-password", checkAuth,validateRequest ,changePassword);
 router.post("/google-login",validateRequest,googleLogin);
 router.post("/send-otp",validateRequest ,sendOTP);
 router.post("/forgot-password",validateRequest ,forgotChangePassword);
+router.post("/facebook-login", validateRequest, facebookLogin);
 
 
 export default router;

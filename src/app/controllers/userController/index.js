@@ -1,5 +1,5 @@
 import catchAsyncError from "../../../utils/errorHandlers/catchAsyncError.js";
-import { createUserService, deleteUserService, getAllUsersService, getOtherUsersService, getUserByIdService, handleChangePassword, handleForgotChangePassword, handleGoogleLogin, loginUserService, sendOTPService, updateUserService } from "../../services/userServices/index.js";
+import { createUserService, deleteUserService, getAllUsersService, getOtherUsersService, getUserByIdService, handleChangePassword, handleFacebookLogin, handleForgotChangePassword, handleGoogleLogin, loginUserService, sendOTPService, updateUserService } from "../../services/userServices/index.js";
 
 const BASE_URL =
   process.env.BASE_URL || `http://localhost:${process.env.PORT || 5000}`;
@@ -71,3 +71,8 @@ export  const forgotChangePassword = catchAsyncError (async function(req, res) {
     const { status, json } = await handleForgotChangePassword(req.body);
     return res.status(status).json(json);
   });
+
+  export const facebookLogin = catchAsyncError(async function(req, res) {
+  const { status, json } = await handleFacebookLogin(req.body);
+  return res.status(status).json(json);
+});

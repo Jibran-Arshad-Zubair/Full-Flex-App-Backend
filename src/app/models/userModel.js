@@ -53,15 +53,19 @@ export default function UsersModel({ Schema, model, models }) {
         type: Date,
         default: null,
       },
+      facebookId: {
+        type: String,
+        unique: true,
+        sparse: true,
+      },
     },
     {
       collection: COLLECTIONS.USERS,
       timestamps: true,
-    }
+    },
   );
 
-  const Users =
-    models[COLLECTIONS.USERS] || model(COLLECTIONS.USERS, userSchema);
+  const Users = models[COLLECTIONS.USERS] || model(COLLECTIONS.USERS, userSchema);
 
   return Users;
 }

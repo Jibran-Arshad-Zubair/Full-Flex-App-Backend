@@ -8,6 +8,7 @@ import { fileURLToPath } from "url";
 import { dirname } from "path";
 import { generateOTP } from "../../../utils/helpers/index.js";
 import { emailService } from "../../../utils/emailService/nodemailer-services.js";
+import { getFacebookUserData, verifyFacebookToken } from "../../../utils/facebookAuth/facebookAuth.js";
 const BASE_URL =
   process.env.BASE_URL || `http://localhost:${process.env.PORT || 5000}`;
 
@@ -371,3 +372,92 @@ export async function handleChangePassword(body, userId) {
       json: successfulResponse("Password updated successfully!"),
     };
   }
+
+export async function handleFacebookLogin(body) {
+  try {
+    const { accessToken, userId } = body;
+    
+    if (!accessToken || !userId) {
+      return {
+        status: 400,
+        json: invalidResponse("Facebook access token and user ID are required!")
+      };
+    }
+
+   
+    const verification = await verifyFacebookToken(accessToken, userId);
+    
+    if (!verification.isValid) {
+      return {
+        status: 401,
+        json: invalidResponse("Invalid Facebook token!")
+      };
+    }
+
+ 
+    const fbUserData = await getFacebookUserData(accessToken);
+    const { email, name, id: fbId, picture } = fbUserData;
+
+    if (!email) {
+      return {
+        status: 400,
+        json: invalidResponse("Facebook login failed! Email is required.")
+      };
+    }
+
+    let user = await Users.findOne({ 
+      $or: [
+        { facebookId: fbId },
+        { email: email }
+      ]
+    });
+
+    if (!user) {
+      
+      const username = name?.toLowerCase().replace(/\s+/g, "_") + "_" + fbId.slice(-4);
+      const profilePhoto = picture?.data?.url || `https://avatar.iran.liara.run/public/guest?username=${username}`;
+
+      user = await Users.create({
+        userName: username,
+        email: email,
+        profilePhoto: profilePhoto,
+        facebookId: fbId,
+        role: "user",
+        password: null, // No password for OAuth users
+        isEmailVerified: true // Facebook emails are verified
+      });
+    } else {
+      // Update existing user's Facebook ID if not set
+      if (!user.facebookId) {
+        user.facebookId = fbId;
+        await user.save();
+      }
+    }
+
+    // Create JWT token
+    const payloadData = { 
+      id: user._id, 
+      email: user.email,
+      role: user.role 
+    };
+    const appToken = createToken(payloadData);
+
+    // Remove sensitive data
+    const userObj = user.toObject();
+    delete userObj.password;
+
+    return {
+      status: 200,
+      json: successfulResponse("Facebook login successful!", {
+        user: userObj,
+        token: appToken,
+      }),
+    };
+  } catch (error) {
+    console.error("Error in handleFacebookLogin:", error);
+    return {
+      status: 500,
+      json: invalidResponse("Facebook login failed!"),
+    };
+  }
+}
